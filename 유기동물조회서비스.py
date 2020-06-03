@@ -108,6 +108,24 @@ class Main:
         self.opt4.config(width=17, font=self.fontstyle2)
         self.opt4.place(x=270, y=300)
 
+    def BacktoMainButton(self):
+        self.BacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.BacktoMain)
+        self.BacktomainButton.place(x=430, y=585)
+
+    def BacktoMain(self):
+        self.RenderText.destroy()
+        self.RenderTextScrollbar.destroy()
+        self.BacktomainButton.destroy()
+        self.mapButton.destroy()
+        self.bookmarkButton.destroy()
+
+        self.SearchBox()
+        self.setupButton()
+        self.CategoryCity()
+        self.CategoryBreed()
+        self.CategoryDistrict()
+        self.CategoryKind()
+
     def SearchButtonAction(self):
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
@@ -115,6 +133,10 @@ class Main:
         self.opt2.destroy()
         self.opt3.destroy()
         self.opt4.destroy()
+
+        self.MapButton()
+        self.BookMarkButton()
+        self.BacktoMainButton()
 
         self.RenderTextScrollbar = Scrollbar(self.window)
         self.RenderTextScrollbar.place(x=415, y=200)
@@ -213,13 +235,25 @@ class Main:
 
             num1 = 0
 
+    def MapButton(self):
+        self.mapButton = Button(self.window, text="지도", font=self.fontstyle2, borderwidth=5, command=self.Map)
+        self.mapButton.place(x=430, y=200)
+
+    def Map(self):
+        pass
+
+    def BookMarkButton(self):
+        self.bookmarkButton = Button(self.window, text="저장", font=self.fontstyle2, borderwidth=5, command=self.BookMark)
+        self.bookmarkButton.place(x=430, y=250)
+
+    def BookMark(self):
+        pass
+
     def GraphArea(self):
         pass
 
     def GraphBreed(self):
         pass
 
-    def InitRenderText(self):
-        pass
 
 Main()
