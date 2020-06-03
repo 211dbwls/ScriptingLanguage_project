@@ -65,7 +65,7 @@ class Main:
         self.GraphAreaButton = Button(self.window, text="지역", width=20, font=self.fontstyle2, command=self.GraphArea)
         self.GraphAreaButton.place(x=40, y=400)
 
-        self.GraphBreedButton = Button(self.window, text="품종", width=20, font=self.fontstyle2,command=self.GraphBreed)
+        self.GraphBreedButton = Button(self.window, text="품종", width=20, font=self.fontstyle2, command=self.GraphBreed)
         self.GraphBreedButton.place(x=270, y=400)
 
     def CategoryCity(self): #카테고리:지역(시도)
@@ -127,12 +127,12 @@ class Main:
         self.CategoryKind()
 
     def SearchButtonAction(self):
-        self.GraphAreaButton.destroy()
-        self.GraphBreedButton.destroy()
         self.opt1.destroy()
         self.opt2.destroy()
         self.opt3.destroy()
         self.opt4.destroy()
+        self.GraphAreaButton.destroy()
+        self.GraphBreedButton.destroy()
 
         self.MapButton()
         self.BookMarkButton()
@@ -250,10 +250,24 @@ class Main:
         pass
 
     def GraphArea(self):
-        pass
+        self.SearchButton.destroy()
+        self.InputLabel.destroy()
+        self.opt1.destroy()
+        self.opt2.destroy()
+        self.opt3.destroy()
+        self.opt4.destroy()
+        self.GraphAreaButton.destroy()
+        self.GraphBreedButton.destroy()
 
     def GraphBreed(self):
-        pass
+        self.SearchButton.destroy()
+        self.InputLabel.destroy()
+        self.opt1.destroy()
+        self.opt2.destroy()
+        self.opt3.destroy()
+        self.opt4.destroy()
+        self.GraphAreaButton.destroy()
+        self.GraphBreedButton.destroy()
 
 
 Main()
