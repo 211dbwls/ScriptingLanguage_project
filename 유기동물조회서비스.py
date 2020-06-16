@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import font
+from tkinter import ttk
 from io import BytesIO
 import tkinter.messagebox
 import urllib
@@ -12,6 +13,9 @@ import webbrowser
 import json
 import requests
 from bs4 import BeautifulSoup
+# smtp 정보
+host = "smtp.gmail.com" # Gmail SMTP 서버 주소.
+port = "587"
 
 class Main:
     def __init__(self):
@@ -26,9 +30,9 @@ class Main:
         self.SearchBox()
         self.setupButton()
         self.CategoryCity()
-        self.CategoryDistrict()
+        self.CategoryDistrictScreen()
         self.CategoryKind()
-        self.CategoryBreed()
+        self.CategoryBreedScreen()
 
         self.window.mainloop()
 
@@ -75,6 +79,111 @@ class Main:
         self.req6 = self.conn6.getresponse()
         self.strXml6 = self.req6.read().decode('utf-8')
 
+        # 대구광역시
+        self.conn7 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn7.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6270000&")
+        self.req7 = self.conn7.getresponse()
+        self.strXml7 = self.req7.read().decode('utf-8')
+
+        # 인천광역시
+        self.conn8 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn8.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6280000&")
+        self.req8 = self.conn8.getresponse()
+        self.strXml8= self.req8.read().decode('utf-8')
+
+        # 광주광역시
+        self.conn9 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn9.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6290000&")
+        self.req9 = self.conn9.getresponse()
+        self.strXml9 = self.req9.read().decode('utf-8')
+
+        # 세종특별자치시
+        self.conn10 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn10.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=5690000&")
+        self.req10 = self.conn10.getresponse()
+        self.strXml10 = self.req10.read().decode('utf-8')
+
+        # 대전광역시
+        self.conn11 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn11.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6300000&")
+        self.req11 = self.conn11.getresponse()
+        self.strXml11 = self.req11.read().decode('utf-8')
+
+        # 울산광역시
+        self.conn12 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn12.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6310000&")
+        self.req12 = self.conn12.getresponse()
+        self.strXml12 = self.req12.read().decode('utf-8')
+
+        # 경기도
+        self.conn13 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn13.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6410000&")
+        self.req13 = self.conn13.getresponse()
+        self.strXml13 = self.req13.read().decode('utf-8')
+
+        # 강원도
+        self.conn14 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn14.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6420000&")
+        self.req14 = self.conn14.getresponse()
+        self.strXml14 = self.req14.read().decode('utf-8')
+
+        # 충청북도
+        self.conn15 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn15.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6430000&")
+        self.req15 = self.conn15.getresponse()
+        self.strXml15 = self.req15.read().decode('utf-8')
+
+        # 충청남도
+        self.conn16 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn16.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6440000&")
+        self.req16 = self.conn16.getresponse()
+        self.strXml16 = self.req16.read().decode('utf-8')
+
+        # 전라북도
+        self.conn17 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn17.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6450000&")
+        self.req17 = self.conn17.getresponse()
+        self.strXml17 = self.req17.read().decode('utf-8')
+
+        # 전라남도
+        self.conn18 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn18.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6460000&")
+        self.req18 = self.conn18.getresponse()
+        self.strXml18 = self.req18.read().decode('utf-8')
+
+        # 경상북도
+        self.conn19 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn19.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6470000&")
+        self.req19 = self.conn19.getresponse()
+        self.strXml19 = self.req19.read().decode('utf-8')
+
+        # 경상남도
+        self.conn20 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn20.request("GET",
+                           "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6480000&")
+        self.req20 = self.conn20.getresponse()
+        self.strXml20 = self.req20.read().decode('utf-8')
+
+        # 제주특별자치도
+        self.conn21 = http.client.HTTPConnection("openapi.animal.go.kr")
+        self.conn21.request("GET",
+                            "/openapi/service/rest/abandonmentPublicSrvc/sigungu?serviceKey=f%2FqounJa%2BfZ5Bv1YnJPiKcEcWrrfYur9FgrYkinR8t0m7sCjvWoey6inoG2PxEvBzgqEs%2Fchc29kokMbhkJdLg%3D%3D&upr_cd=6500000&")
+        self.req21 = self.conn21.getresponse()
+        self.strXml21 = self.req21.read().decode('utf-8')
+
         self.LoadXMLFromFile()
 
     def LoadXMLFromFile(self):  # xml
@@ -85,11 +194,32 @@ class Main:
         self.tree4 = ElementTree.fromstring(self.strXml4)  # 시도
 
         self.tree5 = ElementTree.fromstring(self.strXml5)  # 서울특별시
-        self.tree6 = ElementTree.fromstring(self.strXml6)  # 부산광역시시
+        self.tree6 = ElementTree.fromstring(self.strXml6)  # 부산광역시
+        self.tree7 = ElementTree.fromstring(self.strXml7)  # 대구광역시
+        self.tree8 = ElementTree.fromstring(self.strXml8)  # 인천광역시
+        self.tree9 = ElementTree.fromstring(self.strXml9)  # 광주광역시
+        self.tree10 = ElementTree.fromstring(self.strXml10)  # 세종특별자치시
+        self.tree11 = ElementTree.fromstring(self.strXml11)  # 대전광역시
+        self.tree12 = ElementTree.fromstring(self.strXml12)  # 울산광역시
+        self.tree13 = ElementTree.fromstring(self.strXml13)  # 경기도
+        self.tree14 = ElementTree.fromstring(self.strXml14)  # 강원도
+        self.tree15 = ElementTree.fromstring(self.strXml15)  # 충청북도
+        self.tree16 = ElementTree.fromstring(self.strXml16)  # 충청남도
+        self.tree17 = ElementTree.fromstring(self.strXml17)  # 전라북도
+        self.tree18 = ElementTree.fromstring(self.strXml18)  # 전라남도
+        self.tree19 = ElementTree.fromstring(self.strXml19)  # 경상북도
+        self.tree20 = ElementTree.fromstring(self.strXml20)  # 경상남도
+        self.tree21 = ElementTree.fromstring(self.strXml21)  # 제주특별자치도
 
     def setLabel(self): # Label
         self.MainText = Label(text="유기동물 조회 서비스", width=24, height=1,  font=self.fontstyle, fg="black")
         self.MainText.place(x=80, y=50)
+
+        self.CategoryCityLabel = Label(text="지역", width=4, height=1, font=self.fontstyle3, fg="black")
+        self.CategoryCityLabel.place(x=45, y=200)
+
+        self.CategoryBreedLabel = Label(text="품종", width=4, height=1, font=self.fontstyle3, fg="black")
+        self.CategoryBreedLabel.place(x=45, y=300)
 
     def SearchBox(self): # 검색박스
         self.InputLabel = Entry(self.window, font=self.fontstyle2, width=36, borderwidth=10, relief='ridge')
@@ -99,6 +229,12 @@ class Main:
         self.SearchButton = Button(self.window, text="검색", font=self.fontstyle2, borderwidth=5, command=self.SearchButtonAction)
         self.SearchButton.place(x=430, y=120)
 
+        self.CategoryCityButton = Button(self.window, text="검색", font=self.fontstyle3, borderwidth=5, command=self.CategoryCitySearchButtonAction)
+        self.CategoryCityButton.place(x=440, y=195)
+
+        self.CategoryBreedButton = Button(self.window, text="검색", font=self.fontstyle3, borderwidth=5, command=self.CategoryBreedSearchButtonAction)
+        self.CategoryBreedButton.place(x=440, y=295)
+
         self.GraphAreaButton = Button(self.window, text="지역", width=20, font=self.fontstyle2, command=self.GraphCity)
         self.GraphAreaButton.place(x=40, y=400)
 
@@ -106,78 +242,559 @@ class Main:
         self.GraphBreedButton.place(x=270, y=400)
 
     def CategoryCity(self): #카테고리:지역(시도)
-        self.CategoryCityList = ["시/도 선택"]
-
+        self.CategoryCityText = []
         self.itemElements4 = self.tree4.iter("item")
 
         for item in self.itemElements4:
-            self.CategoryCityList.append(item.find("orgdownNm").text)
+            self.CategoryCityText.append(item.find("orgdownNm").text)
 
-        self.variable1 = StringVar(self.window)
-        self.variable1.set(self.CategoryCityList[0])
+        self.City = StringVar()
+        self.CategoryCityList = ttk.Combobox(self.window, width=20, textvariable=self.City)
+        self.CategoryCityList['values'] = self.CategoryCityText
 
-        self.opt1 = OptionMenu(self.window, self.variable1, *self.CategoryCityList)
-        self.opt1.config(width=17, font=self.fontstyle2)
-        self.opt1.place(x=40, y=200)
+        self.CategoryCityList.place(x=90, y=200)
+        self.CategoryCityList.current(0)
 
-    def CategoryDistrict(self): #카테고리:지역(구)
-        self.CategoryDistrictList = ["행정구역 선택"]
+        self.CategoryCityList.bind("<<ComboboxSelected>>", self.CategoryDistrict)
 
-        self.variable2 = StringVar(self.window)
-        self.variable2.set(self.CategoryDistrictList[0])
+    def CategoryDistrictScreen(self):  # 카테고리:지역(구)
+        self.CategoryDistrictText = [" "]
 
-        self.opt2 = OptionMenu(self.window, self.variable2, *self.CategoryDistrictList)
-        self.opt2.config(width=17, font=self.fontstyle2)
-        self.opt2.place(x=270, y=200)
+        self.CategoryDistrict = StringVar()
+        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryDistrict)
+        self.CategoryDistrictList['values'] = self.CategoryDistrictText
 
-    def CategoryKind(self): #카테고리:품종(종류)
-        self.CategoryKindList = ["종류 선택", "개", "고양이", "기타"]
+        self.CategoryDistrictList.place(x=270, y=200)
+        self.CategoryDistrictList.current(0)
 
-        self.variable3 = StringVar(self.window)
-        self.variable3.set(self.CategoryKindList[0])
+    def CategoryDistrict(self, event):  # 카테고리:지역(구)
+        self.CategoryDistrictText = [" "]
 
-        self.opt3 = OptionMenu(self.window, self.variable3, *self.CategoryKindList)
-        self.opt3.config(width=17, font=self.fontstyle2)
-        self.opt3.place(x=40, y=300)
+        if self.CategoryCityList.get() == "서울특별시":
+            self.itemElements5 = self.tree5.iter("item")
+            for item in self.itemElements5:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "부산광역시":
+            self.itemElements6 = self.tree6.iter("item")
+            for item in self.itemElements6:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "대구광역시":
+            self.itemElements7 = self.tree7.iter("item")
+            for item in self.itemElements7:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "인천광역시":
+            self.itemElements8 = self.tree8.iter("item")
+            for item in self.itemElements8:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "광주광역시":
+            self.itemElements9 = self.tree9.iter("item")
+            for item in self.itemElements9:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "세종특별자치시":
+            self.itemElements10 = self.tree10.iter("item")
+            for item in self.itemElements10:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "대전광역시":
+            self.itemElements11 = self.tree11.iter("item")
+            for item in self.itemElements11:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "울산광역시":
+            self.itemElements12 = self.tree12.iter("item")
+            for item in self.itemElements12:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "경기도":
+            self.itemElements13 = self.tree13.iter("item")
+            for item in self.itemElements13:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "강원도":
+            self.itemElements14 = self.tree14.iter("item")
+            for item in self.itemElements14:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "충청북도":
+            self.itemElements15 = self.tree15.iter("item")
+            for item in self.itemElements15:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "충청남도":
+            self.itemElements16 = self.tree16.iter("item")
+            for item in self.itemElements16:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "전라북도":
+            self.itemElements17 = self.tree17.iter("item")
+            for item in self.itemElements17:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "전라남도":
+            self.itemElements18 = self.tree18.iter("item")
+            for item in self.itemElements18:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "경상북도":
+            self.itemElements19 = self.tree19.iter("item")
+            for item in self.itemElements19:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "경상남도":
+            self.itemElements20 = self.tree20.iter("item")
+            for item in self.itemElements20:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+        elif self.CategoryCityList.get() == "제주특별자치도":
+            self.itemElements21 = self.tree21.iter("item")
+            for item in self.itemElements21:
+                self.CategoryDistrictText.append(item.find("orgdownNm").text)
 
-    def CategoryBreed(self): #카테고리:품종(품종)
-        self.CategoryBreedList = ["품종 선택"]
+        self.CategoryDistrict = StringVar()
+        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryDistrict)
+        self.CategoryDistrictList['values'] = self.CategoryDistrictText
 
-        self.variable4 = StringVar(self.window)
-        self.variable4.set(self.CategoryBreedList[0])
+        self.CategoryDistrictList.place(x=270, y=200)
+        self.CategoryDistrictList.current(0)
 
-        self.opt4 = OptionMenu(self.window, self.variable4, *self.CategoryBreedList)
-        self.opt4.config(width=17, font=self.fontstyle2)
-        self.opt4.place(x=270, y=300)
+    def CategoryCitySearchButtonAction(self):
+        self.DistrictName = self.CategoryDistrictList.get()
 
-    def SearchBacktoMainButton(self):
-        self.SearchBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.SearchBacktoMain)
-        self.SearchBacktomainButton.place(x=430, y=585)
-
-    def SearchBacktoMain(self):
-        self.RenderText.destroy()
-        self.RenderTextScrollbar.destroy()
-        self.SearchBacktomainButton.destroy()
-        self.mapButton.destroy()
-        self.bookmarkButton.destroy()
-
-        self.SearchBox()
-        self.setupButton()
-        self.CategoryCity()
-        self.CategoryBreed()
-        self.CategoryDistrict()
-        self.CategoryKind()
-
-    def SearchButtonAction(self):
-        self.opt1.destroy()
-        self.opt2.destroy()
-        self.opt3.destroy()
-        self.opt4.destroy()
+        self.SearchButton.destroy()
+        self.InputLabel.destroy()
+        #self.CategoryCityLabel.destroy()
+        #self.CategoryCityButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
+        self.CategoryBreedLabel.destroy()
+        self.CategoryBreedButton.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
 
         self.MapButton()
-        self.BookMarkButton()
+        self.mapButton.place(x=430, y=160)
+        self.MailBox()
+        self.mailButton()
+        self.mailB.place(x=430, y=220)
+        self.CategoryCitySearchBacktoMainButton()
+
+        self.CategoryCityLabel.place(x=45, y=120)
+        self.CategoryCityButton.place(x=440, y=115)
+        self.CategoryCity()
+        self.CategoryCityList.place(x=90, y=120)
+        self.CategoryDistrictScreen()
+        self.CategoryDistrictList.place(x=270, y=120)
+
+        self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=30, borderwidth=12, relief='ridge')
+        self.RenderText.place(x=40, y=160)
+
+        self.RenderTextScrollbar = Scrollbar(self.RenderText)
+        self.RenderTextScrollbar.place(x=415, y=160)
+        self.RenderTextScrollbar.config(command=self.RenderText.yview)
+
+        self.RenderText.config(yscrollcommand=self.RenderTextScrollbar.set)
+
+        self.retlist = []
+
+        num1 = 0
+        self.Citydic = dict()
+        self.itemList = []
+
+        self.itemElements1 = self.tree1.iter("item")
+        self.itemElements2 = self.tree2.iter("item")
+        self.itemElements3 = self.tree3.iter("item")
+
+        for item in self.itemElements1:
+            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
+            if(len(self.CategoryCitySearchSplit) == 1):
+                self.CategoryCitySearchSplit.append(" ")
+            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
+            self.itemList.append(item)
+        j = 0
+        for i in self.Citydic.keys():
+            if self.DistrictName == i:
+                item = self.itemList[j]
+                self.careNm = item.find("careNm")
+                self.careAddr = item.find("careAddr")
+                self.careTel = item.find("careTel")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.careNm.text)
+                self.retlist[num1].append(self.careAddr.text)
+                self.retlist[num1].append(self.careTel.text)
+
+                num1 += 1
+            j += 1
+
+        for item in self.itemElements2:
+            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
+            if (len(self.CategoryCitySearchSplit) == 1):
+                self.CategoryCitySearchSplit.append(" ")
+            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
+        for i in self.Citydic.keys():
+            if self.DistrictName == i:
+                self.careNm = item.find("careNm")
+                self.careAddr = item.find("careAddr")
+                self.careTel = item.find("careTel")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.careNm.text)
+                self.retlist[num1].append(self.careAddr.text)
+                self.retlist[num1].append(self.careTel.text)
+
+                num1 += 1
+
+        for item in self.itemElements3:
+            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
+            if (len(self.CategoryCitySearchSplit) == 1):
+                self.CategoryCitySearchSplit.append(" ")
+            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
+        for i in self.Citydic.keys():
+            if self.DistrictName == i:
+                self.careNm = item.find("careNm")
+                self.careAddr = item.find("careAddr")
+                self.careTel = item.find("careTel")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.careNm.text)
+                self.retlist[num1].append(self.careAddr.text)
+                self.retlist[num1].append(self.careTel.text)
+
+                num1 += 1
+
+        for i in range(len(self.retlist)):
+            self.RenderText.insert(INSERT, "\n보호소 이름:")
+            self.RenderText.insert(INSERT, self.retlist[i][0])
+            self.RenderText.insert(INSERT, "\n주소:")
+            self.RenderText.insert(INSERT, self.retlist[i][1])
+            self.RenderText.insert(INSERT, "\n전화번호:")
+            self.RenderText.insert(INSERT, self.retlist[i][2])
+            self.RenderText.insert(INSERT, "\n---------------------------------------")
+
+            num1 = 0
+
+    def CategoryCitySearchBacktoMainButton(self):
+        self.CitySearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.CategoryCitySearchBacktoMain)
+        self.CitySearchBacktoMainButton.place(x=430, y=585)
+
+    def CategoryCitySearchBacktoMain(self):
+        self.RenderText.destroy()
+        self.RenderTextScrollbar.destroy()
+        self.CitySearchBacktoMainButton.destroy()
+        self.mapButton.destroy()
+        self.InputLabel1.destroy()
+        self.mailB.destroy()
+
+        self.SearchBox()
+        self.setupButton()
+        self.setLabel()
+        self.CategoryCity()
+        self.CategoryDistrictScreen()
+        self.CategoryKind()
+        self.CategoryBreedScreen()
+
+    def CategoryKind(self): #카테고리:품종(종류)
+        self.CategoryKindText = ["개", "고양이", "기타"]
+
+        self.Kind = StringVar()
+        self.CategoryKindList = ttk.Combobox(self.window, width=20, textvariable=self.Kind)
+        self.CategoryKindList['values'] = self.CategoryKindText
+
+        self.CategoryKindList.place(x=90, y=300)
+        self.CategoryKindList.current(0)
+
+        self.CategoryKindList.bind("<<ComboboxSelected>>", self.CategoryBreed)
+
+    def CategoryBreedScreen(self):  # 카테고리:지역(구)
+        self.CategoryBreedText = [" "]
+
+        self.Breed = StringVar()
+        self.CategoryBreedList = ttk.Combobox(self.window, width=20, textvariable=self.Breed)
+        self.CategoryBreedList['values'] = self.CategoryBreedText
+
+        self.CategoryBreedList.place(x=270, y=300)
+        self.CategoryBreedList.current(0)
+
+    def CategoryBreed(self, event): #카테고리:품종(품종)
+        self.CategoryBreedDic = dict()
+        self.CategoryBreedText = [" "]
+        self.kindBreedText = ""
+        self.kindBreedTextList = []
+
+        if self.CategoryKindList.get() == "개":
+            self.itemElements1 = self.tree1.iter("item")
+            for item in self.itemElements1:
+                self.kindBreed = item.find("kindCd")
+                self.kindBreedSplit = self.kindBreed.text.split()
+
+                for i in range(len(self.kindBreedSplit) - 1):
+                    self.kindBreedText += self.kindBreedSplit[i + 1]
+                self.kindBreedTextList.append(self.kindBreedText)
+
+                self.kindBreedText = ""
+            for i in range(len(self.kindBreedTextList)):
+                self.CategoryBreedDic[self.kindBreedTextList[i]] = 0
+            for i in self.CategoryBreedDic.keys():
+                if i != '':
+                    self.CategoryBreedText.append(i)
+        elif self.CategoryKindList.get() == "고양이":
+            self.itemElements2 = self.tree2.iter("item")
+            for item in self.itemElements2:
+                self.kindBreed = item.find("kindCd")
+                self.kindBreedSplit = self.kindBreed.text.split()
+
+                for i in range(len(self.kindBreedSplit)-1):
+                    self.kindBreedText += self.kindBreedSplit[i+1]
+                self.kindBreedTextList.append(self.kindBreedText)
+
+                self.kindBreedText = ""
+            for i in range(len(self.kindBreedTextList)):
+                self.CategoryBreedDic[self.kindBreedTextList[i]] = 0
+            for i in self.CategoryBreedDic.keys():
+                if i != '':
+                    self.CategoryBreedText.append(i)
+        elif self.CategoryKindList.get() == "기타":
+            self.itemElements3 = self.tree3.iter("item")
+            for item in self.itemElements3:
+                self.kindBreed = item.find("kindCd")
+                self.kindBreedSplit = self.kindBreed.text.split()
+
+                for i in range(len(self.kindBreedSplit) - 1):
+                    self.kindBreedText += self.kindBreedSplit[i + 1]
+                self.kindBreedTextList.append(self.kindBreedText)
+
+                self.kindBreedText = ""
+            for i in range(len(self.kindBreedTextList)):
+                self.CategoryBreedDic[self.kindBreedTextList[i]] = 0
+            for i in self.CategoryBreedDic.keys():
+                if i != '':
+                    self.CategoryBreedText.append(i)
+
+        self.CategoryBreed = StringVar()
+        self.CategoryBreedList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryBreed)
+        self.CategoryBreedList['values'] = self.CategoryBreedText
+
+        self.CategoryBreedList.place(x=270, y=300)
+        self.CategoryBreedList.current(0)
+
+        self.CategoryBreedList.bind("<<ComboboxSelected>>")
+
+    def CategoryBreedSearchButtonAction(self):
+        self.BreedText = self.CategoryBreedList.get()
+
+        self.SearchButton.destroy()
+        self.InputLabel.destroy()
+        self.CategoryCityLabel.destroy()
+        self.CategoryCityButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
+        #self.CategoryBreedLabel.destroy()
+        #self.CategoryBreedButton.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
+        self.GraphAreaButton.destroy()
+        self.GraphBreedButton.destroy()
+
+        self.MapButton()
+        self.mapButton.place(x=430, y=160)
+        self.MailBox()
+        self.mailButton()
+        self.mailB.place(x=430, y=220)
+        self.CategoryBreedSearchBacktoMainButton()
+
+        self.CategoryBreedLabel.place(x=45, y=120)
+        self.CategoryBreedButton.place(x=440, y=115)
+        self.CategoryKind()
+        self.CategoryKindList.place(x=90, y=120)
+        self.CategoryBreedScreen()
+        self.CategoryBreedList.place(x=270, y=120)
+
+        self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=30, borderwidth=12, relief='ridge')
+        self.RenderText.place(x=40, y=160)
+
+        self.RenderTextScrollbar = Scrollbar(self.RenderText)
+        self.RenderTextScrollbar.place(x=415, y=160)
+        self.RenderTextScrollbar.config(command=self.RenderText.yview)
+
+        self.RenderText.config(yscrollcommand=self.RenderTextScrollbar.set)
+
+        self.retlist = []
+
+        num1 = 0
+
+        self.itemElements1 = self.tree1.iter("item")
+        self.itemElements2 = self.tree2.iter("item")
+        self.itemElements3 = self.tree3.iter("item")
+
+        for item in self.itemElements1:
+            self.CategoryBreedSearch = (item.find("kindCd"))
+            self.CategoryBreedSearchSplit = self.CategoryBreedSearch.text.split()
+            if (len(self.CategoryBreedSearchSplit) == 1):
+                self.CategoryBreedSearchSplit.append(" ")
+
+            if self.CategoryBreedSearchSplit[0] == "[개]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+                self.kindCd = item.find("kindCd")
+                self.age = item.find("age")
+                self.happenDt = item.find("happenDt")
+                self.happenPlace = item.find("happenPlace")
+                self.sexCd = item.find("sexCd")
+                self.specialMark = item.find("specialMark")
+                self.imageUrl = item.find("filename")
+                self.processState = item.find("processState")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.kindCd.text)
+                self.retlist[num1].append(self.age.text)
+                self.retlist[num1].append(self.happenDt.text)
+                self.retlist[num1].append(self.happenPlace.text)
+                self.retlist[num1].append(self.sexCd.text)
+                self.retlist[num1].append(self.specialMark.text)
+                self.retlist[num1].append(self.imageUrl.text)
+                self.retlist[num1].append(self.processState.text)
+
+                num1 += 1
+
+        for item in self.itemElements2:
+            self.CategoryBreedSearch = (item.find("kindCd"))
+            self.CategoryBreedSearchSplit = self.CategoryBreedSearch.text.split()
+            if (len(self.CategoryBreedSearchSplit) == 1):
+                self.CategoryBreedSearchSplit.append(" ")
+
+            if self.CategoryBreedSearchSplit[0] == "[고양이]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+                self.kindCd = item.find("kindCd")
+                self.age = item.find("age")
+                self.happenDt = item.find("happenDt")
+                self.happenPlace = item.find("happenPlace")
+                self.sexCd = item.find("sexCd")
+                self.specialMark = item.find("specialMark")
+                self.imageUrl = item.find("filename")
+                self.processState = item.find("processState")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.kindCd.text)
+                self.retlist[num1].append(self.age.text)
+                self.retlist[num1].append(self.happenDt.text)
+                self.retlist[num1].append(self.happenPlace.text)
+                self.retlist[num1].append(self.sexCd.text)
+                self.retlist[num1].append(self.specialMark.text)
+                self.retlist[num1].append(self.imageUrl.text)
+                self.retlist[num1].append(self.processState.text)
+
+                num1 += 1
+
+        for item in self.itemElements3:
+            self.CategoryBreedSearch = (item.find("kindCd"))
+            self.CategoryBreedSearchSplit = self.CategoryBreedSearch.text.split()
+            if (len(self.CategoryBreedSearchSplit) == 1):
+                self.CategoryBreedSearchSplit.append(" ")
+
+            if self.CategoryBreedSearchSplit[0] == "[기타축종]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+                self.kindCd = item.find("kindCd")
+                self.age = item.find("age")
+                self.happenDt = item.find("happenDt")
+                self.happenPlace = item.find("happenPlace")
+                self.sexCd = item.find("sexCd")
+                self.specialMark = item.find("specialMark")
+                self.imageUrl = item.find("filename")
+                self.processState = item.find("processState")
+
+                self.retlist.append([])
+
+                self.retlist[num1].append(self.kindCd.text)
+                self.retlist[num1].append(self.age.text)
+                self.retlist[num1].append(self.happenDt.text)
+                self.retlist[num1].append(self.happenPlace.text)
+                self.retlist[num1].append(self.sexCd.text)
+                self.retlist[num1].append(self.specialMark.text)
+                self.retlist[num1].append(self.imageUrl.text)
+                self.retlist[num1].append(self.processState.text)
+
+                num1 += 1
+
+        self.image = []
+        for i in range(len(self.retlist)):
+            with urllib.request.urlopen(self.retlist[i][6]) as u:
+                self.raw_data = u.read()
+            self.im = Image.open(BytesIO(self.raw_data))
+
+            self.image.append(ImageTk.PhotoImage(self.im))
+
+        for i in range(len(self.retlist)):
+            self.RenderText.image_create(END, image=self.image[i])
+
+            self.RenderText.insert(INSERT, "\n품종:")
+            self.RenderText.insert(INSERT, self.retlist[i][0])
+            self.RenderText.insert(INSERT, "\n나이:")
+            self.RenderText.insert(INSERT, self.retlist[i][1])
+            self.RenderText.insert(INSERT, "\n성:")
+            self.RenderText.insert(INSERT, self.retlist[i][4])
+            self.RenderText.insert(INSERT, "\n발견 날짜:")
+            self.RenderText.insert(INSERT, self.retlist[i][2])
+            self.RenderText.insert(INSERT, "\n발견 장소:")
+            self.RenderText.insert(INSERT, self.retlist[i][3])
+            self.RenderText.insert(INSERT, "\n특징:")
+            self.RenderText.insert(INSERT, self.retlist[i][5])
+            self.RenderText.insert(INSERT, "\n현재 상태:")
+            self.RenderText.insert(INSERT, self.retlist[i][7])
+
+            self.RenderText.insert(INSERT, "\n---------------------------------------")
+
+            num1 = 0
+
+    def CategoryBreedSearchBacktoMainButton(self):
+        self.BreedSearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.CategoryBreedSearchBacktoMain)
+        self.BreedSearchBacktoMainButton.place(x=430, y=585)
+
+    def CategoryBreedSearchBacktoMain(self):
+        self.RenderText.destroy()
+        self.RenderTextScrollbar.destroy()
+        self.BreedSearchBacktoMainButton.destroy()
+        self.mapButton.destroy()
+        self.InputLabel1.destroy()
+        self.mailB.destroy()
+
+        self.SearchBox()
+        self.setupButton()
+        self.setLabel()
+        self.CategoryCity()
+        self.CategoryDistrictScreen()
+        self.CategoryKind()
+        self.CategoryBreedScreen()
+
+    def SearchBacktoMainButton(self):
+        self.SearchBacktomainB = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.SearchBacktoMain)
+        self.SearchBacktomainB.place(x=430, y=585)
+
+    def SearchBacktoMain(self):
+        self.RenderText.destroy()
+        self.RenderTextScrollbar.destroy()
+        self.SearchBacktomainB.destroy()
+        self.InputLabel1.destroy()
+        self.mailB.destroy()
+        self.mapButton.destroy()
+
+        self.SearchBox()
+        self.setupButton()
+        self.setLabel()
+        self.CategoryCity()
+        self.CategoryDistrictScreen()
+        self.CategoryKind()
+        self.CategoryBreedScreen()
+
+    def SearchButtonAction(self):
+        self.CategoryCityLabel.destroy()
+        self.CategoryCityButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
+        self.CategoryBreedLabel.destroy()
+        self.CategoryBreedButton.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
+        self.GraphAreaButton.destroy()
+        self.GraphBreedButton.destroy()
+
+        self.MapButton()
+        self.MailBox()
+        self.mailButton()
         self.SearchBacktoMainButton()
 
         self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=27, borderwidth=12, relief='ridge')
@@ -342,12 +959,120 @@ class Main:
         self.map_osm.save('osm.html') # html 파일로 저장
         webbrowser.open_new('osm.html')
 
-    def BookMarkButton(self):
-        self.bookmarkButton = Button(self.window, text="저장", font=self.fontstyle2, borderwidth=5, command=self.BookMark)
-        self.bookmarkButton.place(x=430, y=250)
+    def mailButton(self):
+        self.mailB = Button(self.window, text="메일", font=self.fontstyle2, borderwidth=5, command=self.GMail)
+        self.mailB.place(x=430, y=250)
 
-    def BookMark(self):
-        pass
+    def GMail(self):
+        global host, port
+        html = ""
+        title = str("유기동물 정보")
+        senderAddr = str("noelvi1225@gmail.com")
+        recipientAddr = self.InputLabel1.get()
+        #메시지 쓰는데
+
+        #msgtext = str("테스트용 메시지")
+        passwd = str("choi1537")
+        html = self.MakeHtmlDoc()
+
+        import smtplib
+        # MIMEMultipart의 MIME을 생성합니다.
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+
+        # Message container를 생성합니다.
+        msg = MIMEMultipart('alternative')
+
+        # set message
+        msg['Subject'] = title
+        msg['From'] = senderAddr
+        msg['To'] = recipientAddr
+
+        msgPart = MIMEText(html, 'plain')
+        bookPart = MIMEText(html, 'html', _charset='UTF-8')
+
+        # 메세지에 생성한 MIME 문서를 첨부합니다.
+        msg.attach(msgPart)
+        msg.attach(bookPart)
+
+        print("connect smtp server ... ")
+        s = smtplib.SMTP(host, port)
+        # s.set_debuglevel(1)
+        s.ehlo()
+        s.starttls()
+        s.ehlo()
+        s.login(senderAddr, passwd)  # 로긴을 합니다.
+        s.sendmail(senderAddr, [recipientAddr], msg.as_string())
+        s.close()
+
+        print("Mail sending complete!!!")
+
+    def MakeHtmlDoc(self):
+        from xml.dom.minidom import getDOMImplementation
+        # get Dom Implementation
+        impl = getDOMImplementation()
+
+        newdoc = impl.createDocument(None, "html", None)  # DOM 객체 생성
+        top_element = newdoc.documentElement
+        header = newdoc.createElement('header')
+        top_element.appendChild(header)
+
+        # Body 엘리먼트 생성.
+        body = newdoc.createElement('body')
+        # BR 태그 (엘리먼트) 생성.
+        bre = newdoc.createElement('br')
+
+        # create bold element
+        b = newdoc.createElement('b')
+        # create text node
+        center = newdoc.createTextNode("보호소:" + self.InputLabel.get())
+        b.appendChild(center)
+
+        body.appendChild(b)
+        body.appendChild(bre)  # line end
+
+        for i in range(len(self.retlist)):
+            # create bold element
+            b = newdoc.createElement('b')
+            # create text node
+            kindCd = newdoc.createTextNode("품종:" + self.retlist[i][0])
+            b.appendChild(kindCd)
+
+            body.appendChild(b)
+
+            # BR 태그 (엘리먼트) 생성.
+            br = newdoc.createElement('br')
+
+            body.appendChild(br)
+
+            # create title Element
+            p = newdoc.createElement('p')
+            # create text node
+            age = newdoc.createTextNode("나이:" + self.retlist[i][1]+ " ")
+            p.appendChild(age)
+            sexCd = newdoc.createTextNode("성: " + self.retlist[i][4]+ " ")
+            p.appendChild(sexCd)
+            happenDt = newdoc.createTextNode("발견 날짜: " + self.retlist[i][2]+ " ")
+            p.appendChild(happenDt)
+            happenPlace = newdoc.createTextNode("발견 장소: " + self.retlist[i][3]+ " ")
+            p.appendChild(happenPlace)
+            specialMark = newdoc.createTextNode("특징: " + self.retlist[i][5]+ " ")
+            p.appendChild(specialMark)
+            processState = newdoc.createTextNode("현재 상태: " + self.retlist[i][7]+ " ")
+            p.appendChild(processState)
+
+
+            body.appendChild(p)
+            body.appendChild(br)  # line end
+
+        # append Body
+        top_element.appendChild(body)
+
+        return newdoc.toxml()
+
+    def MailBox(self): # 검색박스
+        self.InputLabel1 = Entry(self.window, font=self.fontstyle2, width=36, borderwidth=10, relief='ridge')
+        self.InputLabel1.place(x=430, y=300)
 
     def GraphBreedBacktoMainButton(self):
         self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.GraphBreedBacktoMain)
@@ -360,9 +1085,9 @@ class Main:
         self.SearchBox()
         self.setupButton()
         self.CategoryCity()
-        self.CategoryBreed()
-        self.CategoryDistrict()
+        self.CategoryDistrictScreen()
         self.CategoryKind()
+        self.CategoryBreedScreen()
 
     def GraphCityBacktoMainButton(self):
         self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.GraphCityBacktoMain)
@@ -375,17 +1100,21 @@ class Main:
         self.SearchBox()
         self.setupButton()
         self.CategoryCity()
-        self.CategoryBreed()
-        self.CategoryDistrict()
+        self.CategoryDistrictScreen()
         self.CategoryKind()
+        self.CategoryBreedScreen()
 
     def GraphCity(self):
         self.SearchButton.destroy()
         self.InputLabel.destroy()
-        self.opt1.destroy()
-        self.opt2.destroy()
-        self.opt3.destroy()
-        self.opt4.destroy()
+        self.CategoryCityLabel.destroy()
+        self.CategoryBreedLabel.destroy()
+        self.CategoryCityButton.destroy()
+        self.CategoryBreedButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
 
@@ -531,10 +1260,14 @@ class Main:
     def GraphBreed(self):
         self.SearchButton.destroy()
         self.InputLabel.destroy()
-        self.opt1.destroy()
-        self.opt2.destroy()
-        self.opt3.destroy()
-        self.opt4.destroy()
+        self.CategoryCityLabel.destroy()
+        self.CategoryBreedLabel.destroy()
+        self.CategoryCityButton.destroy()
+        self.CategoryBreedButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
 
