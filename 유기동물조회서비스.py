@@ -12,17 +12,7 @@ import folium
 import webbrowser
 import json
 import requests
-import sys
-import time
-import sqlite3
-import telepot
-from pprint import pprint
-from urllib.request import urlopen
 from bs4 import BeautifulSoup
-import re
-from datetime import date, datetime, timedelta
-import traceback
-import noti
 
 # smtp 정보
 host = "smtp.gmail.com" # Gmail SMTP 서버 주소.
