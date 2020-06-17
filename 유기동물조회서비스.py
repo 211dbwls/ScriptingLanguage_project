@@ -12,7 +12,18 @@ import folium
 import webbrowser
 import json
 import requests
+import sys
+import time
+import sqlite3
+import telepot
+from pprint import pprint
+from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import re
+from datetime import date, datetime, timedelta
+import traceback
+import noti
+
 # smtp 정보
 host = "smtp.gmail.com" # Gmail SMTP 서버 주소.
 port = "587"
@@ -22,9 +33,11 @@ class Main:
         self.window = Tk()
         self.window.title("유기동물 조회 서비스")
         self.window.geometry("500x700")
+        self.window.configure(bg='floral white')
         self.fontstyle = font.Font(self.window, size=20, weight='bold', family='Consolas')
         self.fontstyle2 = font.Font(self.window, size=14, weight='bold', family='Consolas')
         self.fontstyle3 = font.Font(self.window, size=10, weight='bold', family='Consolas')
+        self.fontstyle4 = font.Font(self.window, size=8, weight='bold', family='Consolas')
         self.xml()
         self.setLabel()
         self.SearchBox()
@@ -212,34 +225,37 @@ class Main:
         self.tree21 = ElementTree.fromstring(self.strXml21)  # 제주특별자치도
 
     def setLabel(self): # Label
-        self.MainText = Label(text="유기동물 조회 서비스", width=24, height=1,  font=self.fontstyle, fg="black")
+        self.MainText = Label(text="유기동물 조회 서비스", width=24, height=1,  font=self.fontstyle, fg="black", bg='floral white')
         self.MainText.place(x=80, y=50)
 
-        self.CategoryCityLabel = Label(text="지역", width=4, height=1, font=self.fontstyle3, fg="black")
+        self.CategoryCityLabel = Label(text="지역", width=4, height=1, font=self.fontstyle3, fg="black", bg='floral white')
         self.CategoryCityLabel.place(x=45, y=200)
 
-        self.CategoryBreedLabel = Label(text="품종", width=4, height=1, font=self.fontstyle3, fg="black")
+        self.CategoryBreedLabel = Label(text="품종", width=4, height=1, font=self.fontstyle3, fg="black", bg='floral white')
         self.CategoryBreedLabel.place(x=45, y=300)
 
+        self.GraphLabel = Label(text="그래프", width=6, height=1, font=self.fontstyle3, fg="black", bg='floral white')
+        self.GraphLabel.place(x=45, y=400)
+
     def SearchBox(self): # 검색박스
-        self.InputLabel = Entry(self.window, font=self.fontstyle2, width=36, borderwidth=10, relief='ridge')
-        self.InputLabel.place(x=40, y=120)
+        self.InputLabel = Entry(self.window, font=self.fontstyle3, width=53, borderwidth=3, relief='ridge', bg='white')
+        self.InputLabel.place(x=50, y=135)
 
     def setupButton(self): #버튼:검색버튼, 그래프 버튼(지역 / 품종)
-        self.SearchButton = Button(self.window, text="검색", font=self.fontstyle2, borderwidth=5, command=self.SearchButtonAction)
-        self.SearchButton.place(x=430, y=120)
+        self.SearchButton = Button(self.window, text="검색", font=self.fontstyle3, bg='floral white',command=self.SearchButtonAction)
+        self.SearchButton.place(x=440, y=132)
 
-        self.CategoryCityButton = Button(self.window, text="검색", font=self.fontstyle3, borderwidth=5, command=self.CategoryCitySearchButtonAction)
-        self.CategoryCityButton.place(x=440, y=195)
+        self.CategoryCityButton = Button(self.window, text="검색", font=self.fontstyle3, bg='floral white',command=self.CategoryCitySearchButtonAction)
+        self.CategoryCityButton.place(x=440, y=198)
 
-        self.CategoryBreedButton = Button(self.window, text="검색", font=self.fontstyle3, borderwidth=5, command=self.CategoryBreedSearchButtonAction)
-        self.CategoryBreedButton.place(x=440, y=295)
+        self.CategoryBreedButton = Button(self.window, text="검색", font=self.fontstyle3, bg='floral white',command=self.CategoryBreedSearchButtonAction)
+        self.CategoryBreedButton.place(x=440, y=298)
 
-        self.GraphAreaButton = Button(self.window, text="지역", width=20, font=self.fontstyle2, command=self.GraphCity)
-        self.GraphAreaButton.place(x=40, y=400)
+        self.GraphAreaButton = Button(self.window, text="지역", width=20, font=self.fontstyle3, bg='floral white',command=self.GraphCity)
+        self.GraphAreaButton.place(x=100, y=400)
 
-        self.GraphBreedButton = Button(self.window, text="품종", width=20, font=self.fontstyle2, command=self.GraphBreed)
-        self.GraphBreedButton.place(x=270, y=400)
+        self.GraphBreedButton = Button(self.window, text="품종", width=20, font=self.fontstyle3, bg='floral white',command=self.GraphBreed)
+        self.GraphBreedButton.place(x=290, y=400)
 
     def CategoryCity(self): #카테고리:지역(시도)
         self.CategoryCityText = []
@@ -260,8 +276,8 @@ class Main:
     def CategoryDistrictScreen(self):  # 카테고리:지역(구)
         self.CategoryDistrictText = [" "]
 
-        self.CategoryDistrict = StringVar()
-        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryDistrict)
+        self.District = StringVar()
+        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.District)
         self.CategoryDistrictList['values'] = self.CategoryDistrictText
 
         self.CategoryDistrictList.place(x=270, y=200)
@@ -273,7 +289,8 @@ class Main:
         if self.CategoryCityList.get() == "서울특별시":
             self.itemElements5 = self.tree5.iter("item")
             for item in self.itemElements5:
-                self.CategoryDistrictText.append(item.find("orgdownNm").text)
+                if item.find("orgdownNm").text != "가정보호":
+                    self.CategoryDistrictText.append(item.find("orgdownNm").text)
         elif self.CategoryCityList.get() == "부산광역시":
             self.itemElements6 = self.tree6.iter("item")
             for item in self.itemElements6:
@@ -339,18 +356,20 @@ class Main:
             for item in self.itemElements21:
                 self.CategoryDistrictText.append(item.find("orgdownNm").text)
 
-        self.CategoryDistrict = StringVar()
-        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryDistrict)
+        self.District = StringVar()
+        self.CategoryDistrictList = ttk.Combobox(self.window, width=20, textvariable=self.District)
         self.CategoryDistrictList['values'] = self.CategoryDistrictText
 
         self.CategoryDistrictList.place(x=270, y=200)
         self.CategoryDistrictList.current(0)
 
     def CategoryCitySearchButtonAction(self):
+        self.CityName = self.CategoryCityList.get()
         self.DistrictName = self.CategoryDistrictList.get()
 
         self.SearchButton.destroy()
         self.InputLabel.destroy()
+        self.GraphLabel.destroy()
         #self.CategoryCityLabel.destroy()
         #self.CategoryCityButton.destroy()
         self.CategoryCityList.destroy()
@@ -362,11 +381,6 @@ class Main:
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
 
-        self.MapButton()
-        self.mapButton.place(x=430, y=160)
-        self.MailBox()
-        self.mailButton()
-        self.mailB.place(x=430, y=220)
         self.CategoryCitySearchBacktoMainButton()
 
         self.CategoryCityLabel.place(x=45, y=120)
@@ -376,8 +390,8 @@ class Main:
         self.CategoryDistrictScreen()
         self.CategoryDistrictList.place(x=270, y=120)
 
-        self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=30, borderwidth=12, relief='ridge')
-        self.RenderText.place(x=40, y=160)
+        self.RenderText = Text(self.window, font=self.fontstyle3, width=56, height=31, borderwidth=3, relief='ridge')
+        self.RenderText.place(x=38, y=158)
 
         self.RenderTextScrollbar = Scrollbar(self.RenderText)
         self.RenderTextScrollbar.place(x=415, y=160)
@@ -387,6 +401,7 @@ class Main:
 
         self.retlist = []
 
+        j = 0
         num1 = 0
         self.Citydic = dict()
         self.itemList = []
@@ -396,91 +411,84 @@ class Main:
         self.itemElements3 = self.tree3.iter("item")
 
         for item in self.itemElements1:
+            self.CitydicBNum = len(self.Citydic.keys())
             self.CategoryCitySearch = (item.find("orgNm"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if(len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
-            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
-            self.itemList.append(item)
-        j = 0
-        for i in self.Citydic.keys():
-            if self.DistrictName == i:
-                item = self.itemList[j]
-                self.careNm = item.find("careNm")
-                self.careAddr = item.find("careAddr")
-                self.careTel = item.find("careTel")
-
-                self.retlist.append([])
-
-                self.retlist[num1].append(self.careNm.text)
-                self.retlist[num1].append(self.careAddr.text)
-                self.retlist[num1].append(self.careTel.text)
-
-                num1 += 1
-            j += 1
+            self.CategoryCityCareNm = (item.find("careNm"))
+            if (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == self.CategoryCitySearchSplit[1]) or (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == " "):
+                self.Citydic[self.CategoryCityCareNm.text] = 0
+            if (self.CitydicBNum+1) == len(self.Citydic.keys()):
+                self.itemList.append(item)
 
         for item in self.itemElements2:
+            self.CitydicBNum = len(self.Citydic.keys())
             self.CategoryCitySearch = (item.find("orgNm"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if (len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
-            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
-        for i in self.Citydic.keys():
-            if self.DistrictName == i:
-                self.careNm = item.find("careNm")
-                self.careAddr = item.find("careAddr")
-                self.careTel = item.find("careTel")
-
-                self.retlist.append([])
-
-                self.retlist[num1].append(self.careNm.text)
-                self.retlist[num1].append(self.careAddr.text)
-                self.retlist[num1].append(self.careTel.text)
-
-                num1 += 1
+            self.CategoryCityCareNm = (item.find("careNm"))
+            if (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == self.CategoryCitySearchSplit[
+                1]) or (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == " "):
+                self.Citydic[self.CategoryCityCareNm.text] = 0
+            if (self.CitydicBNum + 1) == len(self.Citydic.keys()):
+                self.itemList.append(item)
 
         for item in self.itemElements3:
+            self.CitydicBNum = len(self.Citydic.keys())
             self.CategoryCitySearch = (item.find("orgNm"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if (len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
-            self.Citydic[self.CategoryCitySearchSplit[1]] = 0
+            self.CategoryCityCareNm = (item.find("careNm"))
+            if (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == self.CategoryCitySearchSplit[
+                1]) or (self.CityName == self.CategoryCitySearchSplit[0] and self.DistrictName == " "):
+                self.Citydic[self.CategoryCityCareNm.text] = 0
+            if (self.CitydicBNum + 1) == len(self.Citydic.keys()):
+                self.itemList.append(item)
+
         for i in self.Citydic.keys():
-            if self.DistrictName == i:
-                self.careNm = item.find("careNm")
-                self.careAddr = item.find("careAddr")
-                self.careTel = item.find("careTel")
+            item = self.itemList[j]
+            self.careNm = item.find("careNm")
+            self.careAddr = item.find("careAddr")
+            self.careTel = item.find("careTel")
 
-                self.retlist.append([])
+            self.retlist.append([])
 
-                self.retlist[num1].append(self.careNm.text)
-                self.retlist[num1].append(self.careAddr.text)
-                self.retlist[num1].append(self.careTel.text)
+            self.retlist[num1].append(self.careNm.text)
+            self.retlist[num1].append(self.careAddr.text)
+            self.retlist[num1].append(self.careTel.text)
 
-                num1 += 1
+            num1 += 1
+            j += 1
 
-        for i in range(len(self.retlist)):
-            self.RenderText.insert(INSERT, "\n보호소 이름:")
-            self.RenderText.insert(INSERT, self.retlist[i][0])
-            self.RenderText.insert(INSERT, "\n주소:")
-            self.RenderText.insert(INSERT, self.retlist[i][1])
-            self.RenderText.insert(INSERT, "\n전화번호:")
-            self.RenderText.insert(INSERT, self.retlist[i][2])
-            self.RenderText.insert(INSERT, "\n---------------------------------------")
+        if len(self.Citydic.keys()) == 0:
+            self.RenderText.insert(INSERT, "\n검색 결과가 없습니다. ")
+        else:
+            for i in range(len(self.retlist)):
+                self.RenderText.insert(INSERT, "\n보호소 이름:")
+                self.RenderText.insert(INSERT, self.retlist[i][0])
+                self.RenderText.insert(INSERT, "\n주소:")
+                self.RenderText.insert(INSERT, self.retlist[i][1])
+                self.RenderText.insert(INSERT, "\n전화번호:")
+                self.RenderText.insert(INSERT, self.retlist[i][2])
+                self.RenderText.insert(INSERT, "\n---------------------------------------------")
 
-            num1 = 0
+                num1 = 0
 
     def CategoryCitySearchBacktoMainButton(self):
-        self.CitySearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.CategoryCitySearchBacktoMain)
-        self.CitySearchBacktoMainButton.place(x=430, y=585)
+        self.CitySearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle3, bg='floral white', command=self.CategoryCitySearchBacktoMain)
+        self.CitySearchBacktoMainButton.place(x=445, y=600)
 
     def CategoryCitySearchBacktoMain(self):
         self.RenderText.destroy()
         self.RenderTextScrollbar.destroy()
         self.CitySearchBacktoMainButton.destroy()
-        self.mapButton.destroy()
-        self.InputLabel1.destroy()
-        self.mailB.destroy()
+        self.CategoryCityLabel.destroy()
+        self.CategoryCityButton.destroy()
+        self.CategoryCityList.destroy()
+        self.CategoryDistrictList.destroy()
 
         self.SearchBox()
         self.setupButton()
@@ -567,8 +575,8 @@ class Main:
                 if i != '':
                     self.CategoryBreedText.append(i)
 
-        self.CategoryBreed = StringVar()
-        self.CategoryBreedList = ttk.Combobox(self.window, width=20, textvariable=self.CategoryBreed)
+        self.Breed = StringVar()
+        self.CategoryBreedList = ttk.Combobox(self.window, width=20, textvariable=self.Breed)
         self.CategoryBreedList['values'] = self.CategoryBreedText
 
         self.CategoryBreedList.place(x=270, y=300)
@@ -581,6 +589,7 @@ class Main:
 
         self.SearchButton.destroy()
         self.InputLabel.destroy()
+        self.GraphLabel.destroy()
         self.CategoryCityLabel.destroy()
         self.CategoryCityButton.destroy()
         self.CategoryCityList.destroy()
@@ -592,11 +601,6 @@ class Main:
         self.GraphAreaButton.destroy()
         self.GraphBreedButton.destroy()
 
-        self.MapButton()
-        self.mapButton.place(x=430, y=160)
-        self.MailBox()
-        self.mailButton()
-        self.mailB.place(x=430, y=220)
         self.CategoryBreedSearchBacktoMainButton()
 
         self.CategoryBreedLabel.place(x=45, y=120)
@@ -606,8 +610,8 @@ class Main:
         self.CategoryBreedScreen()
         self.CategoryBreedList.place(x=270, y=120)
 
-        self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=30, borderwidth=12, relief='ridge')
-        self.RenderText.place(x=40, y=160)
+        self.RenderText = Text(self.window, font=self.fontstyle3, width=56, height=31, borderwidth=3, relief='ridge')
+        self.RenderText.place(x=38, y=158)
 
         self.RenderTextScrollbar = Scrollbar(self.RenderText)
         self.RenderTextScrollbar.place(x=415, y=160)
@@ -710,47 +714,50 @@ class Main:
 
                 num1 += 1
 
-        self.image = []
-        for i in range(len(self.retlist)):
-            with urllib.request.urlopen(self.retlist[i][6]) as u:
-                self.raw_data = u.read()
-            self.im = Image.open(BytesIO(self.raw_data))
+        if num1 == 0:
+            self.RenderText.insert(INSERT, "\n검색 결과가 없습니다. ")
+        else:
+            self.image = []
+            for i in range(len(self.retlist)):
+                with urllib.request.urlopen(self.retlist[i][6]) as u:
+                    self.raw_data = u.read()
+                self.im = Image.open(BytesIO(self.raw_data))
 
-            self.image.append(ImageTk.PhotoImage(self.im))
+                self.image.append(ImageTk.PhotoImage(self.im))
 
-        for i in range(len(self.retlist)):
-            self.RenderText.image_create(END, image=self.image[i])
+            for i in range(len(self.retlist)):
+                self.RenderText.image_create(END, image=self.image[i])
 
-            self.RenderText.insert(INSERT, "\n품종:")
-            self.RenderText.insert(INSERT, self.retlist[i][0])
-            self.RenderText.insert(INSERT, "\n나이:")
-            self.RenderText.insert(INSERT, self.retlist[i][1])
-            self.RenderText.insert(INSERT, "\n성:")
-            self.RenderText.insert(INSERT, self.retlist[i][4])
-            self.RenderText.insert(INSERT, "\n발견 날짜:")
-            self.RenderText.insert(INSERT, self.retlist[i][2])
-            self.RenderText.insert(INSERT, "\n발견 장소:")
-            self.RenderText.insert(INSERT, self.retlist[i][3])
-            self.RenderText.insert(INSERT, "\n특징:")
-            self.RenderText.insert(INSERT, self.retlist[i][5])
-            self.RenderText.insert(INSERT, "\n현재 상태:")
-            self.RenderText.insert(INSERT, self.retlist[i][7])
+                self.RenderText.insert(INSERT, "\n품종:")
+                self.RenderText.insert(INSERT, self.retlist[i][0])
+                self.RenderText.insert(INSERT, "\n나이:")
+                self.RenderText.insert(INSERT, self.retlist[i][1])
+                self.RenderText.insert(INSERT, "\n성:")
+                self.RenderText.insert(INSERT, self.retlist[i][4])
+                self.RenderText.insert(INSERT, "\n발견 날짜:")
+                self.RenderText.insert(INSERT, self.retlist[i][2])
+                self.RenderText.insert(INSERT, "\n발견 장소:")
+                self.RenderText.insert(INSERT, self.retlist[i][3])
+                self.RenderText.insert(INSERT, "\n특징:")
+                self.RenderText.insert(INSERT, self.retlist[i][5])
+                self.RenderText.insert(INSERT, "\n현재 상태:")
+                self.RenderText.insert(INSERT, self.retlist[i][7])
 
-            self.RenderText.insert(INSERT, "\n---------------------------------------")
-
-            num1 = 0
+                self.RenderText.insert(INSERT, "\n---------------------------------------------")
+                num1 = 0
 
     def CategoryBreedSearchBacktoMainButton(self):
-        self.BreedSearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.CategoryBreedSearchBacktoMain)
-        self.BreedSearchBacktoMainButton.place(x=430, y=585)
+        self.BreedSearchBacktoMainButton = Button(self.window, text="뒤로", font=self.fontstyle3, bg='floral white', command=self.CategoryBreedSearchBacktoMain)
+        self.BreedSearchBacktoMainButton.place(x=445, y=600)
 
     def CategoryBreedSearchBacktoMain(self):
         self.RenderText.destroy()
         self.RenderTextScrollbar.destroy()
         self.BreedSearchBacktoMainButton.destroy()
-        self.mapButton.destroy()
-        self.InputLabel1.destroy()
-        self.mailB.destroy()
+        self.CategoryBreedLabel.destroy()
+        self.CategoryBreedButton.destroy()
+        self.CategoryKindList.destroy()
+        self.CategoryBreedList.destroy()
 
         self.SearchBox()
         self.setupButton()
@@ -761,16 +768,19 @@ class Main:
         self.CategoryBreedScreen()
 
     def SearchBacktoMainButton(self):
-        self.SearchBacktomainB = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.SearchBacktoMain)
-        self.SearchBacktomainB.place(x=430, y=585)
+        self.SearchBacktomainB = Button(self.window, text="뒤로", font=self.fontstyle3, bg='floral white', command=self.SearchBacktoMain)
+        self.SearchBacktomainB.place(x=440, y=600)
 
     def SearchBacktoMain(self):
+        self.SearchButton.destroy()
+        self.InputLabel.destroy()
         self.RenderText.destroy()
         self.RenderTextScrollbar.destroy()
         self.SearchBacktomainB.destroy()
         self.InputLabel1.destroy()
         self.mailB.destroy()
         self.mapButton.destroy()
+        self.MailLabel.destroy()
 
         self.SearchBox()
         self.setupButton()
@@ -781,6 +791,7 @@ class Main:
         self.CategoryBreedScreen()
 
     def SearchButtonAction(self):
+        self.GraphLabel.destroy()
         self.CategoryCityLabel.destroy()
         self.CategoryCityButton.destroy()
         self.CategoryCityList.destroy()
@@ -797,8 +808,8 @@ class Main:
         self.mailButton()
         self.SearchBacktoMainButton()
 
-        self.RenderText = Text(self.window, font=self.fontstyle3, width=50, height=27, borderwidth=12, relief='ridge')
-        self.RenderText.place(x=40, y=200)
+        self.RenderText = Text(self.window, font=self.fontstyle3, width=52, height=28, borderwidth=3, relief='ridge')
+        self.RenderText.place(x=50, y=200)
 
         self.RenderTextScrollbar = Scrollbar(self.RenderText)
         self.RenderTextScrollbar.place(x=415, y=200)
@@ -923,8 +934,8 @@ class Main:
             num1 = 0
 
     def MapButton(self):
-        self.mapButton = Button(self.window, text="지도", font=self.fontstyle2, borderwidth=5, command=self.Map)
-        self.mapButton.place(x=430, y=200)
+        self.mapButton = Button(self.window, text="지도", font=self.fontstyle3, bg='floral white', command=self.Map)
+        self.mapButton.place(x=440, y=200)
 
     def Map(self):
         # 주소를 위도 경도로 변환
@@ -960,8 +971,8 @@ class Main:
         webbrowser.open_new('osm.html')
 
     def mailButton(self):
-        self.mailB = Button(self.window, text="메일", font=self.fontstyle2, borderwidth=5, command=self.GMail)
-        self.mailB.place(x=430, y=250)
+        self.mailB = Button(self.window, text="메일", font=self.fontstyle3, bg='floral white', command=self.GMail)
+        self.mailB.place(x=440, y=230)
 
     def GMail(self):
         global host, port
@@ -1071,12 +1082,15 @@ class Main:
         return newdoc.toxml()
 
     def MailBox(self): # 검색박스
-        self.InputLabel1 = Entry(self.window, font=self.fontstyle2, width=36, borderwidth=10, relief='ridge')
-        self.InputLabel1.place(x=430, y=300)
+        self.MailLabel = Label(text="이메일 주소", width=10, height=1, font=self.fontstyle3, bg='floral white', fg="black")
+        self.MailLabel.place(x=45, y=650)
+
+        self.InputLabel1 = Entry(self.window, font=self.fontstyle4, borderwidth=3, width=45, relief='ridge')
+        self.InputLabel1.place(x=125, y=650)
 
     def GraphBreedBacktoMainButton(self):
-        self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.GraphBreedBacktoMain)
-        self.GraphBacktomainButton.place(x=430, y=585)
+        self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle3, bg='floral white', command=self.GraphBreedBacktoMain)
+        self.GraphBacktomainButton.place(x=440, y=600)
 
     def GraphBreedBacktoMain(self):
         self.GraphBacktomainButton.destroy()
@@ -1084,14 +1098,15 @@ class Main:
 
         self.SearchBox()
         self.setupButton()
+        self.setLabel()
         self.CategoryCity()
         self.CategoryDistrictScreen()
         self.CategoryKind()
         self.CategoryBreedScreen()
 
     def GraphCityBacktoMainButton(self):
-        self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle2, borderwidth=5, command=self.GraphCityBacktoMain)
-        self.GraphBacktomainButton.place(x=430, y=585)
+        self.GraphBacktomainButton = Button(self.window, text="뒤로", font=self.fontstyle3, bg='floral white', command=self.GraphCityBacktoMain)
+        self.GraphBacktomainButton.place(x=440, y=600)
 
     def GraphCityBacktoMain(self):
         self.GraphBacktomainButton.destroy()
@@ -1099,6 +1114,7 @@ class Main:
 
         self.SearchBox()
         self.setupButton()
+        self.setLabel()
         self.CategoryCity()
         self.CategoryDistrictScreen()
         self.CategoryKind()
@@ -1107,6 +1123,7 @@ class Main:
     def GraphCity(self):
         self.SearchButton.destroy()
         self.InputLabel.destroy()
+        self.GraphLabel.destroy()
         self.CategoryCityLabel.destroy()
         self.CategoryBreedLabel.destroy()
         self.CategoryCityButton.destroy()
@@ -1124,7 +1141,7 @@ class Main:
         self.itemElements2 = self.tree2.iter("item")
         self.itemElements3 = self.tree3.iter("item")
 
-        self.GraphCityCanvas = Canvas(self.window, width=500, height=200, relief="solid", bd=2)
+        self.GraphCityCanvas = Canvas(self.window, width=500, height=200, bd=2, bg='floral white')
         self.GraphCityCanvas.place(x=0, y=200)
 
         counts = [0] * 17
@@ -1260,6 +1277,7 @@ class Main:
     def GraphBreed(self):
         self.SearchButton.destroy()
         self.InputLabel.destroy()
+        self.GraphLabel.destroy()
         self.CategoryCityLabel.destroy()
         self.CategoryBreedLabel.destroy()
         self.CategoryCityButton.destroy()
@@ -1277,7 +1295,7 @@ class Main:
         self.itemElements2 = self.tree2.iter("item")
         self.itemElements3 = self.tree3.iter("item")
 
-        self.GraphBreedCanvas = Canvas(self.window, width=500, height=200, relief="solid", bd=2)
+        self.GraphBreedCanvas = Canvas(self.window, width=500, height=200,  bg='floral white', bd=2)
         self.GraphBreedCanvas.place(x=0, y=200)
 
         counts = [0] * 3  # [0,0,...]
