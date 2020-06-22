@@ -402,7 +402,7 @@ class Main:
 
         for item in self.itemElements1:
             self.CitydicBNum = len(self.Citydic.keys())
-            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearch = (item.find("careAddr"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if(len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
@@ -414,7 +414,7 @@ class Main:
 
         for item in self.itemElements2:
             self.CitydicBNum = len(self.Citydic.keys())
-            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearch = (item.find("careAddr"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if (len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
@@ -427,7 +427,7 @@ class Main:
 
         for item in self.itemElements3:
             self.CitydicBNum = len(self.Citydic.keys())
-            self.CategoryCitySearch = (item.find("orgNm"))
+            self.CategoryCitySearch = (item.find("careAddr"))
             self.CategoryCitySearchSplit = self.CategoryCitySearch.text.split()
             if (len(self.CategoryCitySearchSplit) == 1):
                 self.CategoryCitySearchSplit.append(" ")
@@ -576,6 +576,7 @@ class Main:
 
     def CategoryBreedSearchButtonAction(self):
         self.BreedText = self.CategoryBreedList.get()
+        self.KindText = self.CategoryKindList.get()
 
         self.SearchButton.destroy()
         self.InputLabel.destroy()
@@ -623,7 +624,7 @@ class Main:
             if (len(self.CategoryBreedSearchSplit) == 1):
                 self.CategoryBreedSearchSplit.append(" ")
 
-            if self.CategoryBreedSearchSplit[0] == "[개]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+            if self.CategoryBreedSearchSplit[0] == "["+self.KindText+"]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
                 self.kindCd = item.find("kindCd")
                 self.age = item.find("age")
                 self.happenDt = item.find("happenDt")
@@ -652,7 +653,7 @@ class Main:
             if (len(self.CategoryBreedSearchSplit) == 1):
                 self.CategoryBreedSearchSplit.append(" ")
 
-            if self.CategoryBreedSearchSplit[0] == "[고양이]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+            if self.CategoryBreedSearchSplit[0] == "["+self.KindText+"]"  and self.BreedText == self.CategoryBreedSearchSplit[1]:
                 self.kindCd = item.find("kindCd")
                 self.age = item.find("age")
                 self.happenDt = item.find("happenDt")
@@ -681,7 +682,7 @@ class Main:
             if (len(self.CategoryBreedSearchSplit) == 1):
                 self.CategoryBreedSearchSplit.append(" ")
 
-            if self.CategoryBreedSearchSplit[0] == "[기타축종]" and self.BreedText == self.CategoryBreedSearchSplit[1]:
+            if self.BreedText == self.CategoryBreedSearchSplit[1]:
                 self.kindCd = item.find("kindCd")
                 self.age = item.find("age")
                 self.happenDt = item.find("happenDt")
@@ -1136,6 +1137,7 @@ class Main:
 
         counts = [0] * 17
         self.CityList = ["서울", "부산", "대구", "인천", "광주", "세종", "대전", "경기", "울산", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"]
+        feels = ["lavender",  "old lace",  "lemon chiffon", "mint cream", "bisque", "snow", "navajo white", "linen", "antique white", "peach puff", "navajo white", "papaya whip", "blanched almond", "azure", "alice blue", "lavender blush", "floral white"]
 
         for item in self.itemElements1:
             self.orgNm = item.find("orgNm")
@@ -1260,7 +1262,7 @@ class Main:
         heightBar = height * 0.75  # canvas 크기의 75%가 최대 막대 바의 높이
         widthBar = width - 10  # canvas 전체 너비에서 좌 10 우 10을 뺀 값
         for i in range(17):
-            self.GraphCityCanvas.create_rectangle(i * widthBar / 17 + 10, height - heightBar * counts[i] / maxCounts - 20, (i + 1) * widthBar / 17, height-20)#, fill=feels[i])
+            self.GraphCityCanvas.create_rectangle(i * widthBar / 17 + 10, height - heightBar * counts[i] / maxCounts - 20, (i + 1) * widthBar / 17, height-20, fill=feels[i])#, fill=feels[i])
             self.GraphCityCanvas.create_text(i * widthBar / 17 + 10 + 0.5 * widthBar/17, height-10, text=self.CityList[i])
             self.GraphCityCanvas.create_text(i * widthBar / 17 + 10 + 0.5 * widthBar / 17, height-180, text=counts[i])
 
@@ -1290,7 +1292,7 @@ class Main:
 
         counts = [0] * 3  # [0,0,...]
         breed = ["개","고양이","기타"]
-        feels = ["red", "yellow", "green"]
+        feels = ["alice blue", "lavender blush", "lavender"]
         for _ in self.itemElements1:
             counts[0] += 1
         for _ in self.itemElements2:
