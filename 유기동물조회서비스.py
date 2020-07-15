@@ -969,12 +969,12 @@ class Main:
         global host, port
         html = ""
         title = str("유기동물 정보")
-        senderAddr = str("noelvi1225@gmail.com")
+        senderAddr = str("***@gmail.com")
         recipientAddr = self.InputLabel1.get()
         #메시지 쓰는데
 
         #msgtext = str("테스트용 메시지")
-        passwd = str("choi1537")
+        passwd = str("***")
         html = self.MakeHtmlDoc()
 
         import smtplib
